@@ -52,3 +52,14 @@ func TestRepoFindMany2(t *testing.T) {
 	}
 }
 */
+
+func TestFindAll(t *testing.T) {
+	ctx := context.TODO()
+	cmrs, err := CameraRepo.FindAll(ctx)
+	if err != nil {
+		t.Log(err)
+	}
+	for _, cmr := range cmrs {
+		t.Logf("%+v", *cmr)
+	}
+}

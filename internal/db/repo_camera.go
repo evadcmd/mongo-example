@@ -13,6 +13,7 @@ type Camera interface {
 	FindOne(ctx context.Context, id string) (*model.Camera, error)
 	FindMany(ctx context.Context, ids []string) ([]*model.Camera, error)
 	// FindMany2(ctx context.Context, ids []string) ([]interface{}, error)
+	FindAll(ctx context.Context) ([]*model.Camera, error)
 	InsertOne(ctx context.Context, camera *model.Camera) error
 	InsertMany(ctx context.Context, cmrs []*model.Camera) error
 }
@@ -60,6 +61,24 @@ func (cmr *camera) FindMany2(ctx context.Context, ids []string) ([]interface{}, 
 		if err := cur.Decode(&cmr); err != nil {
 			res = append(res, &cmr)
 		}
+	}
+	return res, nil
+}
+
+func (cmr *camera) FindAll(ctx context.Context) ([]*model.Camera, error) {
+	cur, err := cmr.Collection.Find(ctx, bson.M{})
+	// using bson.D is also OK
+	// cur, err := cmr.Collection.Find(ctx, bson.D{})
+	if err != nil {
+		return nil, err
+	}
+	var res []*model.Camera
+	for cur.Next(ctx) {
+		var c model.Camera
+		if err := cur.Decode(&c); err != nil {
+			return nil, err
+		}
+		res = append(res, &c)
 	}
 	return res, nil
 }
